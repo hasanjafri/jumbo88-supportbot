@@ -1,8 +1,8 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
-import { Index } from "@upstash/vector";
-import { chromium, type Browser, type BrowserContext } from "playwright";
+import { chromium, type BrowserContext } from "playwright";
+import { vectorIndex } from "../lib/vector";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,13 +17,6 @@ interface Chunk {
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
-
-function getVectorIndex() {
-  return new Index({
-    url: process.env.UPSTASH_VECTOR_REST_URL!,
-    token: process.env.UPSTASH_VECTOR_REST_TOKEN!,
-  });
-}
 
 // Max chars per chunk (~500 tokens)
 const MAX_CHUNK_CHARS = 2000;
@@ -420,7 +413,6 @@ async function ingest() {
   }
 
   // 4. Upsert to Upstash Vector in batches
-  const vectorIndex = getVectorIndex();
   const BATCH_SIZE = 10;
   for (let i = 0; i < allChunks.length; i += BATCH_SIZE) {
     const batch = allChunks.slice(i, i + BATCH_SIZE);
