@@ -37,43 +37,48 @@ export async function getSessionMessages(
 
 /**
  * Append a message to the session history.
- * Automatically trims to MAX_MESSAGES_PER_SESSION and refreshes the TTL.
+ * Uses pipeline to batch rpush + ltrim + expire into a single HTTP request.
  */
 export async function addSessionMessage(
   sessionId: string,
   message: ChatMessage,
 ): Promise<void> {
   const key = sessionKey(sessionId);
-
-  // Push the message to the end of the list
-  await redis.rpush(key, message);
-
-  // Trim to keep only the most recent messages
-  await redis.ltrim(key, -MAX_MESSAGES_PER_SESSION, -1);
-
-  // Refresh TTL so active sessions stay alive
-  await redis.expire(key, SESSION_TTL_SECONDS);
+  const pipeline = redis.pipeline();
+  pipeline.rpush(key, message);
+  pipeline.ltrim(key, -MAX_MESSAGES_PER_SESSION, -1);
+  pipeline.expire(key, SESSION_TTL_SECONDS);
+  await pipeline.exec();
 }
 
 /**
  * Save both user and assistant messages in one call after a completed exchange.
+ * Uses a single pipeline for all 6 operations (2 rpush + 2 ltrim + 2 expire).
  */
 export async function saveExchange(
   sessionId: string,
   userMessage: string,
   assistantMessage: string,
 ): Promise<void> {
+  const key = sessionKey(sessionId);
   const now = Date.now();
-  await addSessionMessage(sessionId, {
+  const pipeline = redis.pipeline();
+
+  pipeline.rpush(key, {
     role: "user",
     content: userMessage,
     timestamp: now,
-  });
-  await addSessionMessage(sessionId, {
+  } satisfies ChatMessage);
+
+  pipeline.rpush(key, {
     role: "assistant",
     content: assistantMessage,
     timestamp: now,
-  });
+  } satisfies ChatMessage);
+
+  pipeline.ltrim(key, -MAX_MESSAGES_PER_SESSION, -1);
+  pipeline.expire(key, SESSION_TTL_SECONDS);
+  await pipeline.exec();
 }
 
 /**

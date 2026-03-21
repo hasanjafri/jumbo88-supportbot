@@ -17,9 +17,13 @@ export interface VectorResult {
   };
 }
 
+// Minimum similarity score to consider a result relevant
+const MIN_SCORE_THRESHOLD = 0.5;
+
 /**
  * Query the Jumbo88 knowledge base for chunks relevant to the user's message.
  * Returns top-k results with metadata for source attribution.
+ * Filters out results below the minimum relevance score threshold.
  */
 export async function queryKnowledge(
   query: string,
@@ -37,7 +41,7 @@ export async function queryKnowledge(
   });
 
   return results
-    .filter((r) => r.metadata && r.data)
+    .filter((r) => r.metadata && r.data && r.score >= MIN_SCORE_THRESHOLD)
     .map((r) => ({
       id: String(r.id),
       score: r.score,
