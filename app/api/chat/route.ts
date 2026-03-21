@@ -1,4 +1,10 @@
-import { streamText, convertToModelMessages, type UIMessage } from "ai";
+import {
+  streamText,
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  type UIMessage,
+} from "ai";
 import { openai } from "@ai-sdk/openai";
 import { queryKnowledge } from "@/lib/vector";
 import { saveExchange } from "@/lib/redis";
@@ -46,10 +52,17 @@ export async function POST(req: Request) {
       saveExchange(session_id, userText, safeResponse).catch(() => {});
     }
 
-    // Return a plain text stream without calling the LLM
-    return new Response(safeResponse, {
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    // Return a proper UI message stream so useChat can display it
+    const stream = createUIMessageStream({
+      execute: async ({ writer }) => {
+        writer.write({ type: "start" });
+        writer.write({ type: "text-start", id: "safe-response" });
+        writer.write({ type: "text-delta", id: "safe-response", delta: safeResponse });
+        writer.write({ type: "text-end", id: "safe-response" });
+        writer.write({ type: "finish", finishReason: "stop" });
+      },
     });
+    return createUIMessageStreamResponse({ stream });
   }
 
   // Query the knowledge base for relevant context
