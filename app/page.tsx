@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import {
   ChatContainerRoot,
   ChatContainerContent,
@@ -89,6 +89,7 @@ function EscalationBanner({ part }: { part: unknown }) {
 
 export default function Home() {
   const [input, setInput] = useState("");
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [chatKey, setChatKey] = useState(() =>
     typeof window !== "undefined" ? getSessionId() : "init",
   );
@@ -100,6 +101,29 @@ export default function Home() {
       body: () => ({ session_id: getSessionId() }),
     }),
   });
+
+  // Load conversation history from Redis on mount / chat key change
+  useEffect(() => {
+    const sessionId = getSessionId();
+    if (!sessionId) {
+      setHistoryLoaded(true);
+      return;
+    }
+
+    fetch(`/api/chat/history?session_id=${encodeURIComponent(sessionId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.messages && data.messages.length > 0) {
+          setMessages(data.messages as UIMessage[]);
+        }
+      })
+      .catch(() => {
+        // Silently fail — just start fresh
+      })
+      .finally(() => {
+        setHistoryLoaded(true);
+      });
+  }, [chatKey, setMessages]);
 
   const isLoading = status === "streaming" || status === "submitted";
   const hasMessages = messages.length > 0;
@@ -120,6 +144,7 @@ export default function Home() {
     setMessages([]);
     setInput("");
     setChatKey(newId);
+    setHistoryLoaded(true);
   }, [setMessages]);
 
   return (
@@ -155,7 +180,7 @@ export default function Home() {
         <ChatContainerRoot className="h-full w-full">
           <ChatContainerContent className="space-y-6 px-4 py-8 max-w-3xl mx-auto w-full">
             {/* Welcome state */}
-            {!hasMessages && !isLoading && (
+            {!hasMessages && !isLoading && historyLoaded && (
               <div className="flex flex-1 flex-col items-center justify-center gap-8 py-16">
                 <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 text-white text-2xl font-bold shadow-lg">
                   J88
