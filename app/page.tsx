@@ -49,11 +49,7 @@ function resetSessionId(): string {
 }
 
 function EscalationBanner({ part }: { part: unknown }) {
-  if (
-    !part ||
-    typeof part !== "object" ||
-    !("state" in part)
-  ) {
+  if (!part || typeof part !== "object" || !("state" in part)) {
     return null;
   }
 
@@ -75,14 +71,14 @@ function EscalationBanner({ part }: { part: unknown }) {
   }
 
   return (
-    <div className="ml-12 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm dark:border-amber-800 dark:bg-amber-950/30">
+    <div className="ml-12 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
       <div className="flex items-center gap-2">
         <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-        <p className="font-semibold text-amber-800 dark:text-amber-200">
+        <p className="font-semibold text-amber-400">
           Escalated to human support
         </p>
       </div>
-      <p className="mt-2 text-amber-700 dark:text-amber-300">{message}</p>
+      <p className="mt-2 text-amber-300/80">{message}</p>
     </div>
   );
 }
@@ -102,7 +98,6 @@ export default function Home() {
     }),
   });
 
-  // Load conversation history from Redis on mount / chat key change
   useEffect(() => {
     const sessionId = getSessionId();
     if (!sessionId) {
@@ -117,9 +112,7 @@ export default function Home() {
           setMessages(data.messages as UIMessage[]);
         }
       })
-      .catch(() => {
-        // Silently fail — just start fresh
-      })
+      .catch(() => {})
       .finally(() => {
         setHistoryLoaded(true);
       });
@@ -148,17 +141,17 @@ export default function Home() {
   }, [setMessages]);
 
   return (
-    <div className="flex h-dvh flex-col bg-gradient-to-b from-purple-50 to-white dark:from-gray-950 dark:to-gray-900">
+    <div className="flex h-dvh flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center gap-3 border-b border-purple-100 bg-white/80 backdrop-blur-sm px-6 py-4 dark:border-gray-800 dark:bg-gray-950/80">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-purple-700 text-white text-xs font-bold shadow-md">
+      <header className="flex items-center gap-3 border-b border-border bg-card/80 backdrop-blur-sm px-6 py-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-extrabold shadow-[0_0_20px_4px_rgba(34,197,94,0.2)]">
           J88
         </div>
         <div className="flex-1">
-          <h1 className="text-base font-semibold text-gray-900 dark:text-white">
+          <h1 className="text-base font-bold text-foreground">
             Jumbo88 Support
           </h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-muted-foreground">
             AI-powered help — available 24/7
           </p>
         </div>
@@ -167,7 +160,7 @@ export default function Home() {
             variant="ghost"
             size="sm"
             onClick={handleNewConversation}
-            className="text-gray-500 hover:text-purple-600"
+            className="text-muted-foreground hover:text-primary"
           >
             <RotateCcw className="h-4 w-4 mr-1" />
             New chat
@@ -182,14 +175,14 @@ export default function Home() {
             {/* Welcome state */}
             {!hasMessages && !isLoading && historyLoaded && (
               <div className="flex flex-1 flex-col items-center justify-center gap-8 py-16">
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 text-white text-2xl font-bold shadow-lg">
+                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-2xl font-extrabold shadow-[0_0_40px_8px_rgba(34,197,94,0.25)]">
                   J88
                 </div>
                 <div className="text-center max-w-md">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-xl font-bold text-foreground">
                     Welcome to Jumbo88 Support
                   </h2>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                     I can help with account questions, game info, coin
                     redemptions, troubleshooting, and more.
                   </p>
@@ -199,7 +192,7 @@ export default function Home() {
                     <PromptSuggestion
                       key={s}
                       onClick={() => handleSuggestion(s)}
-                      className="text-sm"
+                      className="text-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-colors"
                     >
                       {s}
                     </PromptSuggestion>
@@ -227,7 +220,7 @@ export default function Home() {
                   <div key={msg.id} className="flex justify-end">
                     <div className="max-w-[80%]">
                       <Message className="justify-end">
-                        <MessageContent className="bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
+                        <MessageContent className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
                           {text || "(empty)"}
                         </MessageContent>
                       </Message>
@@ -244,17 +237,17 @@ export default function Home() {
                         src=""
                         alt="Jumbo88"
                         fallback="J"
-                        className="bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 mt-1"
+                        className="bg-primary/20 text-primary mt-1"
                       />
                       {text ? (
                         <MessageContent
                           markdown
-                          className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 dark:border-gray-700"
+                          className="bg-card rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-border"
                         >
                           {text}
                         </MessageContent>
                       ) : (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div className="bg-card rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-border">
                           <Loader variant="typing" size="sm" />
                         </div>
                       )}
@@ -266,36 +259,45 @@ export default function Home() {
               );
             })}
 
-            {/* Loading — before assistant message is added to messages array */}
-            {status === "submitted" && !messages.some((m) => m.role === "assistant" && !m.parts.some((p) => p.type === "text" && "text" in p && (p as { text: string }).text)) && (
-              <div className="max-w-[85%]">
-                <Message className="justify-start">
-                  <MessageAvatar
-                    src=""
-                    alt="Jumbo88"
-                    fallback="J"
-                    className="bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 mt-1"
-                  />
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                    <Loader variant="typing" size="sm" />
-                  </div>
-                </Message>
-              </div>
-            )}
+            {/* Loading */}
+            {status === "submitted" &&
+              !messages.some(
+                (m) =>
+                  m.role === "assistant" &&
+                  !m.parts.some(
+                    (p) =>
+                      p.type === "text" &&
+                      "text" in p &&
+                      (p as { text: string }).text,
+                  ),
+              ) && (
+                <div className="max-w-[85%]">
+                  <Message className="justify-start">
+                    <MessageAvatar
+                      src=""
+                      alt="Jumbo88"
+                      fallback="J"
+                      className="bg-primary/20 text-primary mt-1"
+                    />
+                    <div className="bg-card rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-border">
+                      <Loader variant="typing" size="sm" />
+                    </div>
+                  </Message>
+                </div>
+              )}
 
             {/* Error state */}
             {error && (
-              <div className="mx-auto max-w-md rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300">
+              <div className="mx-auto max-w-md rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
                 Something went wrong. Please try again or contact{" "}
                 <a
                   href="mailto:support@jumbo88.com"
-                  className="underline font-medium"
+                  className="underline font-medium text-red-300"
                 >
                   support@jumbo88.com
                 </a>
               </div>
             )}
-
           </ChatContainerContent>
           <ChatContainerScrollAnchor />
           <ScrollButton className="absolute right-4 bottom-4 shadow-lg rounded-full" />
@@ -303,13 +305,13 @@ export default function Home() {
       </div>
 
       {/* Input area */}
-      <div className="border-t border-purple-100 bg-white/80 backdrop-blur-sm px-4 py-4 dark:border-gray-800 dark:bg-gray-950/80">
+      <div className="border-t border-border bg-card/80 backdrop-blur-sm px-4 py-4">
         <PromptInput
           value={input}
           onValueChange={setInput}
           onSubmit={handleSubmit}
           isLoading={isLoading}
-          className="max-w-3xl mx-auto shadow-sm border-gray-200 dark:border-gray-700"
+          className="max-w-3xl mx-auto border-border"
         >
           <PromptInputTextarea
             placeholder="Ask about Jumbo88..."
@@ -321,18 +323,18 @@ export default function Home() {
                 size="icon"
                 onClick={handleSubmit}
                 disabled={!input.trim() || isLoading}
-                className="h-9 w-9 rounded-full bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-30 disabled:bg-gray-300"
+                className="h-9 w-9 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-30 disabled:bg-muted shadow-[0_0_12px_2px_rgba(34,197,94,0.3)] disabled:shadow-none transition-shadow"
               >
                 <ArrowUp className="h-4 w-4" />
               </Button>
             </PromptInputAction>
           </PromptInputActions>
         </PromptInput>
-        <p className="text-center text-[11px] text-gray-400 mt-2 max-w-3xl mx-auto">
+        <p className="text-center text-[11px] text-muted-foreground mt-2 max-w-3xl mx-auto">
           Jumbo88 AI may make mistakes. For account-specific help, contact{" "}
           <a
             href="mailto:support@jumbo88.com"
-            className="underline hover:text-purple-600"
+            className="underline hover:text-primary transition-colors"
           >
             support@jumbo88.com
           </a>

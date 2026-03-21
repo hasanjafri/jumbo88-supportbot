@@ -31,7 +31,7 @@ const INITIAL_COMPONENTS: Partial<Components> = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-purple-600 dark:text-purple-400 underline underline-offset-2 hover:text-purple-800 dark:hover:text-purple-300 transition-colors"
+        className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
         {...props}
       >
         {children}
