@@ -14,6 +14,7 @@ An AI-powered support chatbot for [Jumbo88](https://www.jumbo88.com) that answer
 | Session History | Upstash Redis |
 | UI | Tailwind CSS v4, shadcn/ui, prompt-kit |
 | Scraping | Playwright (headless Chromium) |
+| Escalation Email | Resend |
 | LLM Evals | promptfoo |
 
 ## Setup
@@ -36,6 +37,8 @@ Copy `.env.local.example` to `.env.local` and fill in your keys:
 
 ```env
 OPENAI_API_KEY=sk-...
+RESEND_API_KEY=re_...
+SUPPORT_EMAIL=jumbo88support@gmail.com
 UPSTASH_VECTOR_REST_URL=https://...upstash.io
 UPSTASH_VECTOR_REST_TOKEN=...
 UPSTASH_REDIS_REST_URL=https://...upstash.io
@@ -79,7 +82,7 @@ Browser (useChat)  ──POST /api/chat──>  Next.js Route Handler
                                          ├─ 2. Query Upstash Vector (top 5 similar chunks)
                                          ├─ 3. Build system prompt with RAG context
                                          ├─ 4. Stream response via OpenAI (streamText)
-                                         ├─ 5. Escalation tool call if needed
+                                         ├─ 5. Escalation tool call if needed ──> Resend (email)
                                          └─ 6. Save exchange to Upstash Redis
 ```
 
@@ -94,6 +97,7 @@ lib/
   vector.ts                       Upstash Vector client + queryKnowledge()
   redis.ts                        Upstash Redis client + session CRUD (pipelined)
   prompts.ts                      System prompt, escalation tool, injection detection
+  email.ts                        Resend email client for escalation notifications
 scripts/
   ingest.ts                       Playwright scraper + chunker + Upstash upserter
 tests/
@@ -131,12 +135,18 @@ The `scripts/ingest.ts` script:
 - Conversation history loaded on page refresh via `GET /api/chat/history`
 - "New chat" generates a fresh session ID and clears the UI
 
-### Escalation (`lib/prompts.ts`)
+### Escalation (`lib/prompts.ts` + `lib/email.ts`)
 
 - Defined as an AI SDK `tool()` with a zod schema (`reason: string`, `category: enum`)
 - Categories: `account_specific`, `no_relevant_info`, `user_requested`, `billing_dispute`, `sensitive_legal`, `low_confidence`
 - The model always provides a text response before calling the escalation tool
-- UI displays an amber escalation banner with the reason
+- **When triggered, sends an escalation email via [Resend](https://resend.com)** to the configured `SUPPORT_EMAIL` with:
+  - Session ID for tracking
+  - Escalation category and reason
+  - Full conversation history for context
+  - Jumbo88-branded HTML email template
+- UI displays an amber escalation banner confirming the escalation
+- If email delivery fails, the banner directs the user to contact support@jumbo88.com directly
 
 ### Guardrails
 

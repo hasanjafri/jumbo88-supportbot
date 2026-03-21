@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import type { VectorResult } from "./vector";
+import { sendEscalationEmail } from "./email";
 
 /**
  * Build the system prompt for the Jumbo88 support chatbot.
@@ -88,41 +89,59 @@ ${contextBlock || "No relevant context was found for this query. If you cannot h
 }
 
 /**
- * Escalation tool — the model calls this when it needs to hand off to a human.
- * Defined as an AI SDK tool with a zod schema for type-safe structured output.
+ * Escalation tool schema — shared between the tool definition and tests.
  */
-export const escalateToHumanTool = tool({
-  description:
-    "Escalate the conversation to a human support agent. Call this when: the question requires account-specific info, no relevant knowledge base content exists, the user asks for a human, or you have low confidence in your answer. Always provide your best answer to the user first, then call this tool.",
-  inputSchema: z.object({
-    reason: z
-      .string()
-      .describe(
-        "Brief explanation of why this needs human attention (e.g. 'User asking about their specific account balance — requires account access')",
-      ),
-    category: z
-      .enum([
-        "account_specific",
-        "no_relevant_info",
-        "user_requested",
-        "billing_dispute",
-        "sensitive_legal",
-        "low_confidence",
-      ])
-      .describe("Category of escalation reason"),
-  }),
-  execute: async ({ reason, category }) => {
-    // In a production system this would create a support ticket.
-    // For now we return the escalation data so the client can display it.
-    return {
-      escalated: true,
-      reason,
-      category,
-      message:
-        "This conversation has been flagged for human review. A support agent will follow up via email.",
-    };
-  },
+const escalationSchema = z.object({
+  reason: z
+    .string()
+    .describe(
+      "Brief explanation of why this needs human attention (e.g. 'User asking about their specific account balance — requires account access')",
+    ),
+  category: z
+    .enum([
+      "account_specific",
+      "no_relevant_info",
+      "user_requested",
+      "billing_dispute",
+      "sensitive_legal",
+      "low_confidence",
+    ])
+    .describe("Category of escalation reason"),
 });
+
+/**
+ * Create the escalation tool with session context for email notifications.
+ * The tool sends an escalation email via Resend when invoked.
+ */
+export function createEscalationTool(
+  sessionId: string,
+  conversationSummary: string,
+) {
+  return tool({
+    description:
+      "Escalate the conversation to a human support agent. Call this when: the question requires account-specific info, no relevant knowledge base content exists, the user asks for a human, or you have low confidence in your answer. Always provide your best answer to the user first, then call this tool.",
+    inputSchema: escalationSchema,
+    execute: async ({ reason, category }) => {
+      // Send escalation email via Resend (fire-and-forget)
+      const emailResult = await sendEscalationEmail({
+        sessionId,
+        reason,
+        category,
+        conversationSummary,
+      }).catch(() => ({ success: false }));
+
+      return {
+        escalated: true,
+        reason,
+        category,
+        emailSent: emailResult.success,
+        message: emailResult.success
+          ? "This conversation has been escalated. A support agent will follow up via email shortly."
+          : "This conversation has been flagged for human review. Please contact support@jumbo88.com directly for immediate assistance.",
+      };
+    },
+  });
+}
 
 /**
  * Detect prompt injection attempts in user input.

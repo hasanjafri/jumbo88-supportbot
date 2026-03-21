@@ -11,7 +11,7 @@ import { saveExchange } from "@/lib/redis";
 import {
   buildSystemPrompt,
   detectPromptInjection,
-  escalateToHumanTool,
+  createEscalationTool,
 } from "@/lib/prompts";
 
 export const maxDuration = 30;
@@ -78,13 +78,27 @@ export async function POST(req: Request) {
     score: c.score,
   }));
 
+  // Build conversation summary for escalation emails
+  const conversationSummary = messages
+    .map((m) => {
+      const text = m.parts
+        ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join(" ");
+      return `${m.role === "user" ? "User" : "Bot"}: ${text}`;
+    })
+    .join("\n");
+
   // Stream the response with the escalation tool available
   const result = streamText({
     model: openai("gpt-4o-mini"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools: {
-      escalate_to_human: escalateToHumanTool,
+      escalate_to_human: createEscalationTool(
+        session_id || "unknown",
+        conversationSummary,
+      ),
     },
     onFinish: async ({ text }) => {
       // Persist the exchange to Redis after streaming completes.
