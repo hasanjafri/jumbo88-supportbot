@@ -2,6 +2,8 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Resend free tier only delivers to your verified account email.
+// Set SUPPORT_EMAIL to your Resend account email for testing.
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "jumbo88support@gmail.com";
 
 // Resend free tier requires sending from onboarding@resend.dev
