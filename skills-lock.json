@@ -5,6 +5,11 @@
       "source": "vercel-labs/next-skills",
       "sourceType": "github",
       "computedHash": "515ba75178bd44875812d9a560bdf14651f86709f89cf1d4f209638e879807f3"
+    },
+    "next-browser": {
+      "source": "vercel-labs/next-browser",
+      "sourceType": "github",
+      "computedHash": "a7b164b1ad5f18616d8d7f98a340525b929076399fcb3c6044281c9ceec32f07"
     }
   }
 }
