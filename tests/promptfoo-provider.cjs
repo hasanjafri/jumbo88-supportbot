@@ -54,18 +54,24 @@ class JumboChatProvider {
             text += parsed.delta;
           }
 
-          if (parsed.type === "tool-call-delta" && parsed.toolName) {
-            toolOutput += `[TOOL_CALL: ${parsed.toolName}`;
-            if (parsed.argsTextDelta) toolOutput += ` ${parsed.argsTextDelta}`;
-            toolOutput += "] ";
+          // Tool call start (captures tool name)
+          if (parsed.type === "tool-input-start" && parsed.toolName) {
+            toolOutput += `[TOOL_CALL: ${parsed.toolName}] `;
           }
 
+          // Tool input streaming (accumulate args)
+          if (parsed.type === "tool-input-delta" && parsed.inputTextDelta) {
+            toolOutput += parsed.inputTextDelta;
+          }
+
+          // Legacy format tool calls
           if (parsed.type === "tool-call" && parsed.toolName) {
             toolOutput += `[TOOL_CALL: ${parsed.toolName} ${JSON.stringify(parsed.args || {})}] `;
           }
 
+          // Tool output/result
           if (parsed.type === "tool-output" && parsed.output) {
-            toolOutput += `[TOOL_OUTPUT: ${JSON.stringify(parsed.output)}] `;
+            toolOutput += ` [TOOL_OUTPUT: ${JSON.stringify(parsed.output)}] `;
           }
         } catch {
           // Skip unparseable lines
