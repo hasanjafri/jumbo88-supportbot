@@ -7,6 +7,7 @@
       "dependencies": {
         "@ai-sdk/openai": "^3.0.47",
         "@ai-sdk/react": "^3.0.136",
+        "@tanstack/react-query": "^5.94.5",
         "@upstash/redis": "^1.37.0",
         "@upstash/vector": "^1.2.3",
         "ai": "^6.0.134",
@@ -33,6 +34,7 @@
       },
       "devDependencies": {
         "@tailwindcss/postcss": "^4",
+        "@tanstack/eslint-plugin-query": "^5.94.5",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
@@ -41,6 +43,7 @@
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.5",
         "prettier": "^3.8.1",
+        "prettier-plugin-tailwindcss": "^0.7.2",
         "promptfoo": "^0.121.2",
         "tailwindcss": "^4",
         "typescript": "^5",
@@ -975,6 +978,12 @@
     "@tailwindcss/oxide-win32-x64-msvc": ["@tailwindcss/oxide-win32-x64-msvc@4.2.2", "", { "os": "win32", "cpu": "x64" }, "sha512-1T/37VvI7WyH66b+vqHj/cLwnCxt7Qt3WFu5Q8hk65aOvlwAhs7rAp1VkulBJw/N4tMirXjVnylTR72uI0HGcA=="],
 
     "@tailwindcss/postcss": ["@tailwindcss/postcss@4.2.2", "", { "dependencies": { "@alloc/quick-lru": "^5.2.0", "@tailwindcss/node": "4.2.2", "@tailwindcss/oxide": "4.2.2", "postcss": "^8.5.6", "tailwindcss": "4.2.2" } }, "sha512-n4goKQbW8RVXIbNKRB/45LzyUqN451deQK0nzIeauVEqjlI49slUlgKYJM2QyUzap/PcpnS7kzSUmPb1sCRvYQ=="],
+
+    "@tanstack/eslint-plugin-query": ["@tanstack/eslint-plugin-query@5.94.5", "", { "dependencies": { "@typescript-eslint/utils": "^8.48.0" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0", "typescript": "^5.4.0" }, "optionalPeers": ["typescript"] }, "sha512-r3yV8xItL6YuyF3oRYL/lVudq7oONceJGy+suFoicPwUAmWqHJ1yrsXGs3WAs7MSPEqwkxcOTseUn6VzLLJmew=="],
+
+    "@tanstack/query-core": ["@tanstack/query-core@5.94.5", "", {}, "sha512-Vx1JJiBURW/wdNGP45afjrqn0LfxYwL7K/bSrQvNRtyLGF1bxQPgUXCpzscG29e+UeFOh9hz1KOVala0N+bZiA=="],
+
+    "@tanstack/react-query": ["@tanstack/react-query@5.94.5", "", { "dependencies": { "@tanstack/query-core": "5.94.5" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-1wmrxKFkor+q8l+ygdHmv0Sq5g84Q3p4xvuJ7AdSIAhQQ7udOt+ZSZ19g1Jea3mHqtlTslLGJsmC4vHFgP0P3A=="],
 
     "@tokenizer/inflate": ["@tokenizer/inflate@0.4.1", "", { "dependencies": { "debug": "^4.4.3", "token-types": "^6.1.1" } }, "sha512-2mAv+8pkG6GIZiF1kNg1jAjh27IDxEPKwdGul3snfztFerfPGI1LjDezZp3i7BElXompqEtPmoPx6c2wgtWsOA=="],
 
@@ -2407,6 +2416,8 @@
     "prettier": ["prettier@3.8.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg=="],
 
     "prettier-linter-helpers": ["prettier-linter-helpers@1.0.1", "", { "dependencies": { "fast-diff": "^1.1.2" } }, "sha512-SxToR7P8Y2lWmv/kTzVLC1t/GDI2WGjMwNhLLE9qtH8Q13C+aEmuRlzDst4Up4s0Wc8sF2M+J57iB3cMLqftfg=="],
+
+    "prettier-plugin-tailwindcss": ["prettier-plugin-tailwindcss@0.7.2", "", { "peerDependencies": { "@ianvs/prettier-plugin-sort-imports": "*", "@prettier/plugin-hermes": "*", "@prettier/plugin-oxc": "*", "@prettier/plugin-pug": "*", "@shopify/prettier-plugin-liquid": "*", "@trivago/prettier-plugin-sort-imports": "*", "@zackad/prettier-plugin-twig": "*", "prettier": "^3.0", "prettier-plugin-astro": "*", "prettier-plugin-css-order": "*", "prettier-plugin-jsdoc": "*", "prettier-plugin-marko": "*", "prettier-plugin-multiline-arrays": "*", "prettier-plugin-organize-attributes": "*", "prettier-plugin-organize-imports": "*", "prettier-plugin-sort-imports": "*", "prettier-plugin-svelte": "*" }, "optionalPeers": ["@ianvs/prettier-plugin-sort-imports", "@prettier/plugin-hermes", "@prettier/plugin-oxc", "@prettier/plugin-pug", "@shopify/prettier-plugin-liquid", "@trivago/prettier-plugin-sort-imports", "@zackad/prettier-plugin-twig", "prettier-plugin-astro", "prettier-plugin-css-order", "prettier-plugin-jsdoc", "prettier-plugin-marko", "prettier-plugin-multiline-arrays", "prettier-plugin-organize-attributes", "prettier-plugin-organize-imports", "prettier-plugin-sort-imports", "prettier-plugin-svelte"] }, "sha512-LkphyK3Fw+q2HdMOoiEHWf93fNtYJwfamoKPl7UwtjFQdei/iIBoX11G6j706FzN3ymX9mPVi97qIY8328vdnA=="],
 
     "pretty-ms": ["pretty-ms@9.3.0", "", { "dependencies": { "parse-ms": "^4.0.0" } }, "sha512-gjVS5hOP+M3wMm5nmNOucbIrqudzs9v/57bWRHQWLYklXqoXKrVfYW2W9+glfGsqtPgpiz5WwyEEB+ksXIx3gQ=="],
 

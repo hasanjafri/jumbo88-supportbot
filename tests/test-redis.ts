@@ -16,12 +16,8 @@ function assert(condition: boolean, name: string) {
 
 async function main() {
   // Dynamic import so env vars are available when the module initializes
-  const {
-    getSessionMessages,
-    addSessionMessage,
-    saveExchange,
-    deleteSession,
-  } = await import("../lib/redis");
+  const { getSessionMessages, addSessionMessage, saveExchange, deleteSession } =
+    await import("../lib/redis");
 
   const TEST_SESSION = `test-session-${Date.now()}`;
 

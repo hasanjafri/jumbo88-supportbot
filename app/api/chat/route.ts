@@ -57,7 +57,11 @@ export async function POST(req: Request) {
       execute: async ({ writer }) => {
         writer.write({ type: "start" });
         writer.write({ type: "text-start", id: "safe-response" });
-        writer.write({ type: "text-delta", id: "safe-response", delta: safeResponse });
+        writer.write({
+          type: "text-delta",
+          id: "safe-response",
+          delta: safeResponse,
+        });
         writer.write({ type: "text-end", id: "safe-response" });
         writer.write({ type: "finish", finishReason: "stop" });
       },

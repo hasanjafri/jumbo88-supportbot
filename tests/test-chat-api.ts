@@ -49,7 +49,11 @@ async function testEndpoint() {
 
   // Read the full response body
   const body1 = await res1.text();
-  assert(body1.length > 0, "response body is not empty", `got ${body1.length} chars`);
+  assert(
+    body1.length > 0,
+    "response body is not empty",
+    `got ${body1.length} chars`,
+  );
   console.log(`  (info) Response length: ${body1.length} chars`);
   console.log(`  (info) First 500 chars:\n${body1.substring(0, 500)}\n`);
 
@@ -80,7 +84,11 @@ async function testEndpoint() {
     body: JSON.stringify(emptyPayload),
   });
 
-  assert(res2.status === 400, "returns 400 for empty message", `got ${res2.status}`);
+  assert(
+    res2.status === 400,
+    "returns 400 for empty message",
+    `got ${res2.status}`,
+  );
 
   // --- Test 3: No user message returns 400 ---
   console.log("\n3. No user message returns 400");
@@ -100,7 +108,11 @@ async function testEndpoint() {
     body: JSON.stringify(noUserPayload),
   });
 
-  assert(res3.status === 400, "returns 400 for non-user message", `got ${res3.status}`);
+  assert(
+    res3.status === 400,
+    "returns 400 for non-user message",
+    `got ${res3.status}`,
+  );
 
   // --- Test 4: Prompt injection returns safe response ---
   console.log("\n4. Prompt injection returns safe response");
@@ -141,9 +153,7 @@ async function testEndpoint() {
       {
         id: "msg-5",
         role: "user",
-        parts: [
-          { type: "text", text: "What are Sweepstakes Coins?" },
-        ],
+        parts: [{ type: "text", text: "What are Sweepstakes Coins?" }],
       },
     ],
     session_id: `test-faq-${Date.now()}`,

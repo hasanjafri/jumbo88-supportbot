@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito_Sans, JetBrains_Mono } from "next/font/google";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
@@ -25,10 +26,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${nunitoSans.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
+      className={`${nunitoSans.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        {children}
+      <body className="flex min-h-full flex-col font-sans">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

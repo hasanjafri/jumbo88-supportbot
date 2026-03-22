@@ -5,7 +5,10 @@ async function main() {
   const { sendEscalationEmail } = await import("../lib/email");
 
   console.log("RESEND_API_KEY set:", !!process.env.RESEND_API_KEY);
-  console.log("SUPPORT_EMAIL:", process.env.SUPPORT_EMAIL || "(not set, using default)");
+  console.log(
+    "SUPPORT_EMAIL:",
+    process.env.SUPPORT_EMAIL || "(not set, using default)",
+  );
   console.log();
 
   console.log("Sending test escalation email...");
@@ -23,7 +26,9 @@ async function main() {
     console.log("\nEmail sent successfully! Check your inbox.");
   } else {
     console.log("\nEmail failed. Check your RESEND_API_KEY and SUPPORT_EMAIL.");
-    console.log("Note: Resend free tier only delivers to your Resend account email.");
+    console.log(
+      "Note: Resend free tier only delivers to your Resend account email.",
+    );
   }
 }
 

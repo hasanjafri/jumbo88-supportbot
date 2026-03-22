@@ -162,7 +162,8 @@ async function scrapeFaqPage(
 
     // Extract Q&A pairs using Schema.org structured data (itemtype="Question")
     const pairs = await page.evaluate(() => {
-      const results: { question: string; answer: string; category: string }[] = [];
+      const results: { question: string; answer: string; category: string }[] =
+        [];
 
       // The FAQ page uses Schema.org markup: div[itemtype*="Question"] > h2[itemprop="name"] + div[itemprop="acceptedAnswer"]
       const questionEls = document.querySelectorAll(
@@ -366,17 +367,18 @@ async function ingest() {
 
     const text = await scrapePage(context, page.url);
     if (!text || text.length < 50) {
-      console.log(
-        `  Skipped — only ${text?.length ?? 0} chars of content`,
-      );
+      console.log(`  Skipped — only ${text?.length ?? 0} chars of content`);
       continue;
     }
 
     // Use the slug as a rough page title, will be overridden by actual content
-    const pageTitle =
-      page.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    const pageTitle = page.slug
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
     const chunks = chunkText(text, page.slug, page.url, pageTitle);
-    console.log(`  Created ${chunks.length} chunk(s) from ${text.length} chars`);
+    console.log(
+      `  Created ${chunks.length} chunk(s) from ${text.length} chars`,
+    );
     allChunks.push(...chunks);
   }
 
@@ -408,7 +410,9 @@ async function ingest() {
           : chunk.data + "\n",
       );
     }
-    console.log(`\nDry run complete. ${allChunks.length} chunks would be upserted.`);
+    console.log(
+      `\nDry run complete. ${allChunks.length} chunks would be upserted.`,
+    );
     return;
   }
 

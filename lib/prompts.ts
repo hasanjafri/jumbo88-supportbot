@@ -159,7 +159,8 @@ export function detectPromptInjection(input: string): {
   const patterns: { regex: RegExp; reason: string }[] = [
     // Instruction override attempts
     {
-      regex: /ignore\s+(all\s+)?(previous|prior|above|your)\s+(instructions|rules|guidelines|prompts?)/,
+      regex:
+        /ignore\s+(all\s+)?(previous|prior|above|your)\s+(instructions|rules|guidelines|prompts?)/,
       reason: "instruction override attempt",
     },
     {
@@ -167,7 +168,8 @@ export function detectPromptInjection(input: string): {
       reason: "instruction override attempt",
     },
     {
-      regex: /forget\s+(all\s+)?(previous|prior|above|your)\s+(instructions|rules)/,
+      regex:
+        /forget\s+(all\s+)?(previous|prior|above|your)\s+(instructions|rules)/,
       reason: "instruction override attempt",
     },
     {
@@ -175,7 +177,8 @@ export function detectPromptInjection(input: string): {
       reason: "instruction override attempt",
     },
     {
-      regex: /do\s+not\s+follow\s+(your|the|any)\s+(instructions|rules|guidelines)/,
+      regex:
+        /do\s+not\s+follow\s+(your|the|any)\s+(instructions|rules|guidelines)/,
       reason: "instruction override attempt",
     },
 
@@ -203,7 +206,8 @@ export function detectPromptInjection(input: string): {
 
     // System prompt extraction
     {
-      regex: /(reveal|show|display|print|output|repeat|echo)\s+(your|the|my)\s+(system\s+)?(prompt|instructions|rules|configuration)/,
+      regex:
+        /(reveal|show|display|print|output|repeat|echo)\s+(your|the|my)\s+(system\s+)?(prompt|instructions|rules|configuration)/,
       reason: "system prompt extraction attempt",
     },
     {
@@ -217,7 +221,8 @@ export function detectPromptInjection(input: string): {
 
     // Encoded instruction injection
     {
-      regex: /\[system\]|\[inst\]|\[\/inst\]|<\|system\|>|<\|user\|>|<\|assistant\|>/,
+      regex:
+        /\[system\]|\[inst\]|\[\/inst\]|<\|system\|>|<\|user\|>|<\|assistant\|>/,
       reason: "encoded instruction injection",
     },
     {
